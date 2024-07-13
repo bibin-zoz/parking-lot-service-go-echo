@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: Parking Lot Service
+  version: 1.0.0
+paths:
+  /park:
+    post:
+      summary: Park a vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkResponse'
+  /unpark:
+    post:
+      summary: Unpark a vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnparkRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnparkResponse'
+components:
+  schemas:
+    ParkRequest:
+      type: object
+      properties:
+        vehicle_id:
+          type: string
+          format: uuid
+        vehicle_type:
+          type: string
+          enum: [motorcycle, car, bus]
+    ParkResponse:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+    UnparkRequest:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+    UnparkResponse:
+      type: object
+      properties:
+        receipt:
+          type: string

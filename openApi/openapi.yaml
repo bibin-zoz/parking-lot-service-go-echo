@@ -1,65 +1,131 @@
 openapi: 3.0.0
 info:
-  title: Parking Lot Service
+  title: Parking Lot Service API
   version: 1.0.0
 paths:
-  /park:
+  /parking-lots:
+    get:
+      summary: Get all parking lots
+      operationId: getParkingLots
+      responses:
+        '200':
+          description: A list of parking lots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParkingLot'
     post:
-      summary: Park a vehicle
+      summary: Create a new parking lot
+      operationId: createParkingLot
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParkRequest'
+              $ref: '#/components/schemas/ParkingLot'
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: The created parking lot
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkResponse'
-  /unpark:
-    post:
-      summary: Unpark a vehicle
+                $ref: '#/components/schemas/ParkingLot'
+  /parking-lots/{id}:
+    get:
+      summary: Get a parking lot by ID
+      operationId: getParkingLotById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The parking lot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingLot'
+    put:
+      summary: Update a parking lot by ID
+      operationId: updateParkingLotById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UnparkRequest'
+              $ref: '#/components/schemas/ParkingLot'
       responses:
         '200':
-          description: Successful operation
+          description: The updated parking lot
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnparkResponse'
+                $ref: '#/components/schemas/ParkingLot'
+    delete:
+      summary: Delete a parking lot by ID
+      operationId: deleteParkingLotById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: The parking lot was deleted
+
 components:
   schemas:
-    ParkRequest:
+    ParkingLot:
       type: object
       properties:
-        vehicle_id:
+        id:
+          type: integer
+        name:
           type: string
-          format: uuid
-        vehicle_type:
-          type: string
-          enum: [motorcycle, car, bus]
-    ParkResponse:
+        spots:
+          type: object
+          properties:
+            motorcycles:
+              type: integer
+            cars:
+              type: integer
+            buses:
+              type: integer
+    EntryTicket:
       type: object
       properties:
-        ticket_id:
+        id:
+          type: integer
+        vehicleType:
           type: string
-          format: uuid
-    UnparkRequest:
+        entryTime:
+          type: string
+          format: date-time
+        parkingLot:
+          $ref: '#/components/schemas/ParkingLot'
+    Receipt:
       type: object
       properties:
-        ticket_id:
+        id:
+          type: integer
+        vehicleType:
           type: string
-          format: uuid
-    UnparkResponse:
-      type: object
-      properties:
-        receipt:
+        exitTime:
           type: string
+          format: date-time
+        fee:
+          type: number
+          format: float
+        parkingLot:
+          $ref: '#/components/schemas/ParkingLot'

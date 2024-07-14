@@ -22,15 +22,15 @@ func main() {
 
 	parkingLotRepo := repository.NewParkingLotRepository(db)
 
-	parkUseCase := usecase.NewParkUseCase(parkingLotRepo)
+	parkUseCase := usecase.NewParkingLotUseCase(parkingLotRepo)
 
 	// Initialize HTTP handler
 	parkhandler := handlers.NewHandler(parkUseCase)
 	routes.SetupRoutes(e, parkhandler)
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
-	
+	e.Static("/swagger-ui", "swagger-ui")
+	e.File("/swagger-ui/openapi.yaml", "../openApi/openapi.yaml")
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

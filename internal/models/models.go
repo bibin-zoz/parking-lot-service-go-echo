@@ -16,17 +16,34 @@ type ParkingLot struct {
 	BusTariffHourly  float64 `json:"bus_tariff_hourly"`
 }
 
-// type Vehicle struct {
-// 	ID           string `gorm:"primaryKey"`
-// 	Type         VehicleType
-// 	EntryTime    time.Time
-// 	ExitTime     *time.Time
-// 	ParkingLotID uint
-// }
-
+type VehicleType struct {
+	ID          uint   `gorm:"primaryKey"`
+	VehicleType string `json:"vehicle_type"`
+}
 type Ticket struct {
-	ID           string `gorm:"primaryKey"`
-	VehicleID    string
-	ParkingLotID uint
-	EntryTime    time.Time
+	ID            string      `gorm:"primaryKey"`
+	VehicleTypeID uint        `json:"vehicle_type_id"`
+	VehicleType   VehicleType `gorm:"foreignKey:VehicleTypeID"`
+	VehicleNumber string      `json:"vehicle_number"`
+	ParkingLotID  uint        `json:"parking_lot_id"`
+	EntryTime     time.Time   `json:"entry_time"`
+	ExitTime      *time.Time  `json:"exit_time,omitempty"`
+	Status        string      `gorm:"type:enum('parked', 'exited');default:'parked'" json:"status"`
+}
+
+type Receipt struct {
+	ID           string    `gorm:"primaryKey"`
+	VehicleType  string    `json:"vehicle_type"`
+	ParkingLotID uint      `json:"parking_lot_id"`
+	EntryTime    time.Time `json:"entry_time"`
+	ExitTime     time.Time `json:"exit_time"`
+	Rate         float64   `json:"rate"`
+	RateType     string    `gorm:"type:enum('hourly', 'daily')"`
+	BillAmount   float64   `json:"bill_amount"`
+}
+
+type FreeSlots struct {
+	TwoWheel      int `json:"two_wheel"`
+	FourWheel     int `json:"four_wheel"`
+	HeavyVehicles int `json:"heavy_vehicles"`
 }

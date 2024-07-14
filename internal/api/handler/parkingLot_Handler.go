@@ -112,3 +112,18 @@ func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 	log.Info().Msgf("Parking lot with ID: %d deleted successfully", id)
 	return c.NoContent(http.StatusNoContent)
 }
+func (h *ParkingLotHandler) GetFreeSlots(c echo.Context) error {
+	parkingLotID, err := strconv.Atoi(c.Param("parkingLotID"))
+	if err != nil {
+		log.Error().Err(err).Msg("Invalid parking lot ID format")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid parking lot ID format"})
+	}
+
+	freeSlots, err := h.parkingLotUseCase.GetFreeParkingLots(uint(parkingLotID))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to get free slots for parking lot ID: %d", parkingLotID)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, freeSlots)
+}

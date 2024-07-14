@@ -83,3 +83,25 @@ func (u *parkingLotUseCase) DeleteParkingLot(id uint) error {
 	log.Info().Msgf("Parking lot with ID: %d deleted successfully", id)
 	return nil
 }
+func (u *parkingLotUseCase) GetFreeParkingLots(parkingLotID uint) (models.FreeSlots, error) {
+	freeSlots := models.FreeSlots{}
+
+	// Get parking lot details
+	parkingLot, err := u.parkingLotRepo.GetParkingLotByID(parkingLotID)
+	if err != nil {
+		return freeSlots, err
+	}
+
+	// Get vehicle counts by type
+	counts, err := u.parkingLotRepo.GetVehicleCountsByType(parkingLotID)
+	if err != nil {
+		return freeSlots, err
+	}
+
+	// Calculate free slots
+	freeSlots.TwoWheel = parkingLot.MotorcycleSpots - counts[1] // Assuming 1 corresponds to TwoWheel
+	freeSlots.FourWheel = parkingLot.CarSpots - counts[2]       // Assuming 2 corresponds to FourWheel
+	freeSlots.HeavyVehicles = parkingLot.BusSpots - counts[3]   // Assuming 3 corresponds to HeavyVehicles
+
+	return freeSlots, nil
+}

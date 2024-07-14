@@ -8,4 +8,5 @@ type ParkingLotUseCase interface {
 	CreateParkingLot(parkingLot *models.ParkingLot) error
 	UpdateParkingLot(parkingLot *models.ParkingLot) error
 	DeleteParkingLot(id uint) error
+	GetFreeParkingLots(parkingLotID uint) (models.FreeSlots, error)
 }

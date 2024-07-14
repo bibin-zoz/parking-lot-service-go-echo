@@ -8,4 +8,5 @@ type ParkingLotRepository interface {
 	CreateParkingLot(parkingLot *models.ParkingLot) error
 	UpdateParkingLot(parkingLot *models.ParkingLot) error
 	DeleteParkingLot(id uint) error
+	GetVehicleCountsByType(parkingLotID uint) (map[uint]int, error)
 }

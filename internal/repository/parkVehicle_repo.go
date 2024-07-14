@@ -25,7 +25,6 @@ func (repo *parkVehicleRepo) ParkVehicle(vehicleType string, vehicleNumber strin
 		VehicleNumber: vehicleNumber,
 		ParkingLotID:  parkingLotID,
 		EntryTime:     time.Now(),
-		Status:        "parked",
 	}
 
 	if err := repo.db.Create(ticket).Error; err != nil {
@@ -65,7 +64,7 @@ func (repo *parkVehicleRepo) ParkExit(ticketID string, exitTime time.Time) (*dom
 	}
 
 	ticket.ExitTime = &exitTime
-	ticket.Status = "exited"
+	ticket.IsParked = false
 
 	tx := repo.db.Begin()
 	if err := tx.Save(&ticket).Error; err != nil {

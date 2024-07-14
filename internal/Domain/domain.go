@@ -34,7 +34,7 @@ type Ticket struct {
 	ParkingLotID  uint       `json:"parking_lot_id"`
 	EntryTime     time.Time  `json:"entry_time"`
 	ExitTime      *time.Time `json:"exit_time,omitempty"`
-	Status        string     `gorm:"type:enum('parked', 'exited');default:'parked'" json:"status"`
+	IsParked      bool       `gorm:"default:true" json:"is_parked"`
 }
 
 type Receipt struct {
@@ -49,7 +49,6 @@ type Receipt struct {
 	BillAmount   float64   `json:"bill_amount"`
 }
 
-// CalculateBill calculates the bill amount based on the entry and exit times, the vehicle type, and the rate type.
 func (r *Receipt) CalculateBill(parkingLot ParkingLot) {
 	duration := r.ExitTime.Sub(r.EntryTime)
 	hours := duration.Hours()

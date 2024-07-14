@@ -27,7 +27,7 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&domain.ParkingLot{})
+	err = db.AutoMigrate(&domain.ParkingLot{}, &domain.Receipt{}, &domain.Ticket{}, &domain.VehicleType{})
 	if err != nil {
 		log.Println("failed to create table")
 		return nil, err

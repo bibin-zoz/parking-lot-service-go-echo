@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 
 	"parking-lot-service/internal/models"
 	repository "parking-lot-service/internal/repository/interface"
@@ -26,6 +27,11 @@ func (u *parkingLotUseCase) GetAllParkingLots() ([]models.ParkingLot, error) {
 		log.Error().Err(err).Msg("Failed to get all parking lots")
 		return nil, err
 	}
+
+	if len(lots) == 0 {
+		return nil, fmt.Errorf("no parking lots available")
+	}
+
 	return lots, nil
 }
 

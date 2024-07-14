@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	routes "parking-lot-service/internal/api"
+	routes "parking-lot-service/internal/api/routes"
 	handlers "parking-lot-service/internal/api/handler"
 	config "parking-lot-service/internal/database"
 	"parking-lot-service/internal/repository"

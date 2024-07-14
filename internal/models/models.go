@@ -2,12 +2,9 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type ParkingLot struct {
-	gorm.Model
 	ID               uint    `gorm:"primaryKey"`
 	Name             string  `json:"name"`
 	MotorcycleSpots  int     `json:"motorcycle_spots"`

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"parking-lot-service/internal/models"
+	domain "parking-lot-service/internal/Domain"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -27,7 +27,7 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&models.ParkingLot{})
+	err = db.AutoMigrate(&domain.ParkingLot{})
 	if err != nil {
 		log.Println("failed to create table")
 		return nil, err

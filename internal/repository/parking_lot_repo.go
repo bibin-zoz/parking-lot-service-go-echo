@@ -57,7 +57,7 @@ func (repo *parkingLotRepo) GetVehicleCountsByType(parkingLotID uint) (map[uint]
 	// Single query to count parked vehicles by type
 	err := repo.db.Model(&domain.Ticket{}).
 		Select("vehicle_type_id, COUNT(*) as count").
-		Where("parking_lot_id = ? AND status = 'parked'", parkingLotID).
+		Where("parking_lot_id = ? AND is_parked = true", parkingLotID).
 		Group("vehicle_type_id").
 		Scan(&results).Error
 

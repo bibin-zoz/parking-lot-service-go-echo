@@ -113,12 +113,14 @@ func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 func (h *ParkingLotHandler) GetFreeSlots(c echo.Context) error {
+	// Extract parkingLotID from route parameter
 	parkingLotID, err := strconv.Atoi(c.Param("parkingLotID"))
 	if err != nil {
 		log.Error().Err(err).Msg("Invalid parking lot ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid parking lot ID format"})
 	}
 
+	// Call use case to get free parking slots
 	freeSlots, err := h.parkingLotUseCase.GetFreeParkingLots(uint(parkingLotID))
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get free slots for parking lot ID: %d", parkingLotID)

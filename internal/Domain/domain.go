@@ -45,7 +45,7 @@ type Receipt struct {
 	EntryTime    time.Time `json:"entry_time"`
 	ExitTime     time.Time `json:"exit_time"`
 	Rate         float64   `json:"rate"`
-	RateType     string    `gorm:"type:enum('hourly', 'daily')"`
+	RateType     string    `json:"RateType"`
 	BillAmount   float64   `json:"bill_amount"`
 }
 

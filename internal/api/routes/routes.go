@@ -18,4 +18,5 @@ func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler) {
 	e.DELETE("/parking-lots/:id", parkingLotHandler.DeleteParkingLot)
 
 	e.GET("/parkinglots/freeslots/:parkingLotID", parkingLotHandler.GetFreeSlots)
+
 }

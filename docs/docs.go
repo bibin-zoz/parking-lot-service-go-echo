@@ -600,7 +600,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Parking Lot API",
-	Description:      "parking-lot-service management. Added sample data in vehicle types,parking lots",
+	Description:      "API for managing parking lots and vehicles. This service provides endpoints to manage parking lots and vehicles, including operations for parking, unparking, and retrieving parking information.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

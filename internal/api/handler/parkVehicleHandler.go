@@ -24,7 +24,6 @@ func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	// Call use case to park vehicle
 	ticket, err := h.parkingVehicleUseCase.ParkVehicle(*req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -42,13 +41,17 @@ func (h *ParkVehicleHandler) ParkExit(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
+	if request.TicketID < 1 {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ticket id"})
+	}
+
 	exitTime := time.Now()
 
 	// Call use case to handle parking exit
-	recipt, err := h.parkingVehicleUseCase.ParkExit(request.TicketID, exitTime)
+	receipt, err := h.parkingVehicleUseCase.ParkExit(request.TicketID, exitTime)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, recipt)
+	return c.JSON(http.StatusOK, receipt)
 }

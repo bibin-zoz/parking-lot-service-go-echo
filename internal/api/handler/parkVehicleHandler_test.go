@@ -1,19 +1,22 @@
 package handlers_test
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
-	domain "parking-lot-service/internal/Domain"
 	handler "parking-lot-service/internal/api/handler"
+	"parking-lot-service/internal/models"
 	mock "parking-lot-service/internal/usecase/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParkVehicleHandler_ParkExit(t *testing.T) {
@@ -26,8 +29,8 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 	e := echo.New()
 
 	t.Run("success", func(t *testing.T) {
-		req := `{"ticket_id":"1", "exit_time":"2024-07-15T10:06:57.8758156+05:30"}`
-		receipt := &domain.Receipt{
+		req := `{"ticket_id":1, "exit_time":"2024-07-15T10:06:57.8758156+05:30"}`
+		receipt := &models.Receipt{
 			ID:           1,
 			VehicleType:  "car",
 			ParkingLotID: 1,
@@ -38,8 +41,8 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 			BillAmount:   10.0,
 		}
 
-		// exitTime, _ := time.Parse(time.RFC3339, "2024-07-15T10:06:57.8758156+05:30")
-		mockUseCase.EXPECT().ParkExit(gomock.Eq(1), gomock.Any()).Return(receipt, nil)
+		// Mock the expected call to ParkExit
+		mockUseCase.EXPECT().ParkExit(1, gomock.Any()).Return(receipt, nil)
 
 		reqBody := strings.NewReader(req)
 		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
@@ -49,9 +52,48 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 
 		if assert.NoError(t, handler.ParkExit(c)) {
 			assert.Equal(t, http.StatusOK, rec.Code)
-			expectedBody := `{"ID":"1","vehicle_type":"car","parking_lot_id":1,"entry_time":"2024-07-15T09:00:00Z","exit_time":"2024-07-15T10:06:57.008758156Z","rate":10,"RateType":"hourly","bill_amount":10}`
+			expectedBody := `{"ID":1,"vehicle_type":"car","parking_lot_id":1,"entry_time":"2024-07-15T09:00:00Z","exit_time":"2024-07-15T10:06:57.008758156Z","rate":10,"RateType":"hourly","bill_amount":10}`
 			assert.JSONEq(t, expectedBody, rec.Body.String())
 		}
 	})
 
+	t.Run("invalid_request_format", func(t *testing.T) {
+		req := `{"ticket_id": -10}` // Provide a negative value as a string
+
+		reqBody := strings.NewReader(req)
+		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
+		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(request, rec)
+
+		// Assertions
+		handler.ParkExit(c)
+		var response map[string]string
+		err := json.Unmarshal(rec.Body.Bytes(), &response)
+		require.NoError(t, err)
+		assert.Contains(t, response["error"], "invalid ticket id")
+	})
+
+	t.Run("already_checked_out", func(t *testing.T) {
+		req := `{"ticket_id": 1}`
+
+		// Set up mock expectation for ParkExit to return an error indicating vehicle already checked out
+		mockUseCase.EXPECT().ParkExit(1, gomock.Any()).Return(nil, fmt.Errorf("vehicle already checked out, invalid ID"))
+
+		reqBody := strings.NewReader(req)
+		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
+		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(request, rec)
+
+		// Call the handler function
+		err := handler.ParkExit(c)
+	
+
+		// Check the response body for error details
+		var response map[string]string
+		err = json.Unmarshal(rec.Body.Bytes(), &response)
+		require.NoError(t, err)
+		assert.Contains(t, response["error"], "vehicle already checked out") // Check for specific error message
+	})
 }

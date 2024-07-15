@@ -5,7 +5,6 @@
 package mock
 
 import (
-	Domain "parking-lot-service/internal/Domain"
 	models "parking-lot-service/internal/models"
 	reflect "reflect"
 	time "time"
@@ -37,10 +36,10 @@ func (m *MockParkVehicleUseCase) EXPECT() *MockParkVehicleUseCaseMockRecorder {
 }
 
 // ParkExit mocks base method.
-func (m *MockParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*Domain.Receipt, error) {
+func (m *MockParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*models.Receipt, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ParkExit", ticketID, exitTime)
-	ret0, _ := ret[0].(*Domain.Receipt)
+	ret0, _ := ret[0].(*models.Receipt)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

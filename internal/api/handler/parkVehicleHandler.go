@@ -1,32 +1,36 @@
 package handlers
 
 import (
+	"net/http"
+	"parking-lot-service/internal/models"
 	usecase "parking-lot-service/internal/usecase/interface"
+
+	"github.com/labstack/echo/v4"
 )
 
 type ParkVehicleHandler struct {
-	parkingVehicleUseCase usecase.ParkingLotUseCase
+	parkingVehicleUseCase usecase.ParkVehicleUseCase
 }
 
-func NewParkVehicleHandler(parkingLotUseCase usecase.ParkingLotUseCase) *ParkVehicleHandler {
-	return &ParkVehicleHandler{parkingVehicleUseCase: parkingLotUseCase}
+func NewParkVehicleHandler(ParkVehicleUseCase usecase.ParkVehicleUseCase) *ParkVehicleHandler {
+	return &ParkVehicleHandler{parkingVehicleUseCase: ParkVehicleUseCase}
 }
 
-// func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
-// 	req := new(models.ParkReq)
+func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
+	req := new(models.ParkReq)
 
-// 	if err := c.Bind(&req); err != nil {
-// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-// 	}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
 
-// 	// Call use case to park vehicle
-// 	ticket, err := h.parkingVehicleUseCase.ParkVehicle(req)
-// 	if err != nil {
-// 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 	}
+	// Call use case to park vehicle
+	ticket, err := h.parkingVehicleUseCase.ParkVehicle(*req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
 
-// 	return c.JSON(http.StatusCreated, ticket)
-// }
+	return c.JSON(http.StatusCreated, ticket)
+}
 
 // func (h *ParkVehicleHandler) ParkExit(c echo.Context) error {
 // 	var request struct {

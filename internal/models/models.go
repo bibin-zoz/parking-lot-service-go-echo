@@ -21,24 +21,23 @@ type VehicleType struct {
 	VehicleType string `json:"vehicle_type"`
 }
 type Ticket struct {
-	ID            string      `gorm:"primaryKey"`
-	VehicleTypeID uint        `json:"vehicle_type_id"`
-	VehicleType   VehicleType `gorm:"foreignKey:VehicleTypeID"`
-	VehicleNumber string      `json:"vehicle_number"`
-	ParkingLotID  uint        `json:"parking_lot_id"`
-	EntryTime     time.Time   `json:"entry_time"`
-	ExitTime      *time.Time  `json:"exit_time,omitempty"`
-	Status        string      `gorm:"type:enum('parked', 'exited');default:'parked'" json:"status"`
+	ID            int  `gorm:"primaryKey"`
+	VehicleTypeID uint `json:"vehicle_type_id"`
+	VehicleType   string
+	VehicleNumber string    `json:"vehicle_number"`
+	ParkingLotID  uint      `json:"parking_lot_id"`
+	EntryTime     time.Time `json:"entry_time"`
+	IsParked      bool      `gorm:"default:true" json:"is_parked"`
 }
 
 type Receipt struct {
-	ID           string    `gorm:"primaryKey"`
+	ID           int       `gorm:"primaryKey"`
 	VehicleType  string    `json:"vehicle_type"`
 	ParkingLotID uint      `json:"parking_lot_id"`
 	EntryTime    time.Time `json:"entry_time"`
 	ExitTime     time.Time `json:"exit_time"`
 	Rate         float64   `json:"rate"`
-	RateType     string    `gorm:"type:enum('hourly', 'daily')"`
+	RateType     string    `json:"RateType"`
 	BillAmount   float64   `json:"bill_amount"`
 }
 

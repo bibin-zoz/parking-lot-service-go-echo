@@ -6,9 +6,8 @@ import (
 )
 
 type ParkVehicleRepository interface {
-	ParkVehicle(vehicleType string, vehicleNumber string, parkingLotID uint) (*domain.Ticket, error)
+	ParkVehicle(ticket *domain.Ticket) (*domain.Ticket, error)
 	GenerateReceipt(ticketID string, exitTime time.Time) (*domain.Receipt, error)
 	ParkExit(string, time.Time) (*domain.Receipt, error)
 	GetVehicleDetails(vehicleID uint) (*domain.VehicleType, error)
-	
 }

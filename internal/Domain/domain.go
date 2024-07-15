@@ -27,8 +27,8 @@ type VehicleType struct {
 
 type Ticket struct {
 	gorm.Model
-	ID            string `gorm:"primaryKey"`
-	VehicleTypeID uint   `json:"vehicle_type_id"`
+	ID            int  `gorm:"primaryKey"`
+	VehicleTypeID uint `json:"vehicle_type_id"`
 	VehicleType   string
 	VehicleNumber string     `json:"vehicle_number"`
 	ParkingLotID  uint       `json:"parking_lot_id"`

@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler) {
+func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler, parkVehicleHandler *handlers.ParkVehicleHandler) {
 	e.GET("/home", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "test")
 	})
@@ -18,5 +18,6 @@ func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler) {
 	e.DELETE("/parking-lots/:id", parkingLotHandler.DeleteParkingLot)
 
 	e.GET("/parkinglots/freeslots/:parkingLotID", parkingLotHandler.GetFreeSlots)
+	e.POST("/parkinglots", parkVehicleHandler.ParkVehicle)
 
 }

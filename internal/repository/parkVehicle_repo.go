@@ -19,16 +19,18 @@ func NewParkVehicleRepo(psqlDB *gorm.DB) repository.ParkVehicleRepository {
 	}
 
 }
-func (repo *parkVehicleRepo) ParkVehicle(vehicleType string, vehicleNumber string, parkingLotID uint) (*domain.Ticket, error) {
-	ticket := &domain.Ticket{
-		VehicleType:   vehicleType,
-		VehicleNumber: vehicleNumber,
-		ParkingLotID:  parkingLotID,
-		EntryTime:     time.Now(),
+func (repo *parkVehicleRepo) ParkVehicle(ticket *domain.Ticket) (*domain.Ticket, error) {
+	ticket.EntryTime = time.Now()
+	tx := repo.db.Begin()
+
+	if err := tx.Create(ticket).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to create ticket: %w", err)
 	}
 
-	if err := repo.db.Create(ticket).Error; err != nil {
-		return nil, fmt.Errorf("failed to create ticket: %w", err)
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return ticket, nil

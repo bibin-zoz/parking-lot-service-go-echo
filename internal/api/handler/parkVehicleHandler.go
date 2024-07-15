@@ -20,7 +20,7 @@ func NewParkVehicleHandler(ParkVehicleUseCase usecase.ParkVehicleUseCase) *ParkV
 
 // ParkVehicle godoc
 // @Summary Park a vehicle
-// @Description Park a vehicle in the parking lot
+// @Description Park a vehicle in the parking lot vehicle number must have min 3 alphabets and 4 numbers
 // @Tags parking
 // @Accept  json
 // @Produce  json

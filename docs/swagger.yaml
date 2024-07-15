@@ -3,6 +3,7 @@ definitions:
   parking-lot-service_internal_models.ExitRequest:
     properties:
       ticket_id:
+        example: 1
         minimum: 1
         type: integer
     type: object
@@ -23,10 +24,13 @@ definitions:
   parking-lot-service_internal_models.ParkReq:
     properties:
       parking_lot_id:
+        example: 1
         type: integer
       vehicle_number:
+        example: AB01C1234
         type: string
       vehicle_type_id:
+        example: 1
         type: integer
     type: object
   parking-lot-service_internal_models.ParkingLot:
@@ -160,7 +164,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Park a vehicle in the parking lot
+      description: Park a vehicle in the parking lot vehicle number must have min
+        3 alphabets and 4 numbers
       parameters:
       - description: Parking Request object
         in: body

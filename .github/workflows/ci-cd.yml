@@ -32,5 +32,6 @@ jobs:
             echo "Connected to AWS EC2 instance"
             cd parking-lot-service/parking-lot-service-go-echo
             git pull
+            export PATH=$PATH:/usr/local/go/bin  # Ensure Go binary path is included
             go build -o main cmd/main.go
             sudo systemctl restart parkinglot.service

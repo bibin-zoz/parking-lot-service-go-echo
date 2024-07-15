@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/park-vehicle": {
             "post": {
-                "description": "Park a vehicle in the parking lot",
+                "description": "Park a vehicle in the parking lot vehicle number must have min 3 alphabets and 4 numbers",
                 "consumes": [
                     "application/json"
                 ],
@@ -431,7 +431,8 @@ const docTemplate = `{
             "properties": {
                 "ticket_id": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 1,
+                    "example": 1
                 }
             }
         },
@@ -457,13 +458,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "parking_lot_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "vehicle_number": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "AB01C1234"
                 },
                 "vehicle_type_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },

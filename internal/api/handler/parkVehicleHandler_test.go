@@ -28,7 +28,7 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		req := `{"ticket_id":"1", "exit_time":"2024-07-15T10:06:57.8758156+05:30"}`
 		receipt := &domain.Receipt{
-			ID:           "1",
+			ID:           1,
 			VehicleType:  "car",
 			ParkingLotID: 1,
 			EntryTime:    time.Date(2024, 7, 15, 9, 0, 0, 0, time.UTC),

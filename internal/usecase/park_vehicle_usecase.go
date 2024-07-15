@@ -76,24 +76,28 @@ func (uc *ParkVehicleUseCase) ParkVehicle(parkReq models.ParkReq) (*models.Ticke
 	}, nil
 }
 
-func (uc *ParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*domain.Receipt, error) {
+func (uc *ParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*models.Receipt, error) {
 	ticketDetails, err := uc.parkVehicleRepo.GetTicketDetailsByID(ticketID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid ticket id: %w", err)
+	}
+	if !ticketDetails.IsParked {
+		return &models.Receipt{}, fmt.Errorf("vehicle already checked out, invalid ID")
 	}
 
 	// Fetch parking lot details
 	parkingLot, err := uc.parkingLotRepo.GetParkingLotByID(ticketDetails.ParkingLotID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch parking lot details: %w", err)
+		return &models.Receipt{}, fmt.Errorf("failed to fetch parking lot details: %w", err)
 	}
 
 	receipt := &domain.Receipt{
-		VehicleType:  ticketDetails.VehicleType,
-		ParkingLotID: ticketDetails.ParkingLotID,
-		EntryTime:    ticketDetails.EntryTime,
-		ExitTime:     exitTime,
-		RateType:     "hourly", // or set this based on your logic
+		VehicleTypeID: int(ticketDetails.VehicleTypeID),
+		VehicleType:   ticketDetails.VehicleType,
+		ParkingLotID:  ticketDetails.ParkingLotID,
+		EntryTime:     ticketDetails.EntryTime,
+		ExitTime:      exitTime,
+		RateType:      "hourly", // or set this based on your logic
 	}
 
 	// Calculate bill amount using Receipt's CalculateBill method
@@ -104,10 +108,21 @@ func (uc *ParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*domai
 	ticketDetails.IsParked = false
 
 	// Delegate database operations to the repository
-	receipt, err = uc.parkVehicleRepo.SaveExitDetails(ticketDetails, receipt)
+	genRecipt, err := uc.parkVehicleRepo.SaveExitDetails(ticketDetails, receipt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save exit details: %w", err)
+		return &models.Receipt{}, fmt.Errorf("failed to save exit details: %w", err)
 	}
 
-	return receipt, nil
+	result := &models.Receipt{
+		ID:           genRecipt.ID, // Assuming genRecipt has the ID field
+		VehicleType:  genRecipt.VehicleType,
+		ParkingLotID: genRecipt.ParkingLotID,
+		EntryTime:    genRecipt.EntryTime,
+		ExitTime:     genRecipt.ExitTime,
+		Rate:         genRecipt.Rate,
+		RateType:     genRecipt.RateType,
+		BillAmount:   genRecipt.BillAmount,
+	}
+
+	return result, nil
 }

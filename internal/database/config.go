@@ -63,7 +63,7 @@ func CreateSampleParkingLots(db *gorm.DB) error {
 	}
 
 	for _, lot := range parkingLots {
-		err := db.Create(&lot).Error
+		err := db.Save(&lot).Error
 		if err != nil {
 			return err
 		}
@@ -74,18 +74,21 @@ func CreateSampleParkingLots(db *gorm.DB) error {
 func CreateSampleVehicleTypes(db *gorm.DB) error {
 	vehicleTypes := []domain.VehicleType{
 		{
+			ID:          1,
 			VehicleType: "Motorcycle",
 		},
 		{
+			ID:          2,
 			VehicleType: "Car",
 		},
 		{
+			ID:          3,
 			VehicleType: "Bus",
 		},
 	}
 
 	for _, vType := range vehicleTypes {
-		err := db.Create(&vType).Error
+		err := db.Save(&vType).Error
 		if err != nil {
 			return err
 		}

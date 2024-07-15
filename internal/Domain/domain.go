@@ -40,14 +40,15 @@ type Ticket struct {
 
 type Receipt struct {
 	gorm.Model
-	ID           string    `gorm:"primaryKey"`
-	VehicleType  string    `json:"vehicle_type"`
-	ParkingLotID uint      `json:"parking_lot_id"`
-	EntryTime    time.Time `json:"entry_time"`
-	ExitTime     time.Time `json:"exit_time"`
-	Rate         float64   `json:"rate"`
-	RateType     string    `json:"RateType"`
-	BillAmount   float64   `json:"bill_amount"`
+	ID            int       `gorm:"primaryKey"`
+	VehicleTypeID int       `json:"vehicle_typeID"`
+	VehicleType   string    `json:"vehicle_type"`
+	ParkingLotID  uint      `json:"parking_lot_id"`
+	EntryTime     time.Time `json:"entry_time"`
+	ExitTime      time.Time `json:"exit_time"`
+	Rate          float64   `json:"rate"`
+	RateType      string    `json:"RateType"`
+	BillAmount    float64   `json:"bill_amount"`
 }
 
 func (r *Receipt) CalculateBill(parkingLot models.ParkingLot) {
@@ -55,12 +56,12 @@ func (r *Receipt) CalculateBill(parkingLot models.ParkingLot) {
 	hours := duration.Hours()
 	days := duration.Hours() / 24
 
-	switch r.VehicleType {
-	case "motorcycle":
+	switch r.VehicleTypeID {
+	case 1:
 		r.Rate = parkingLot.MotorcycleTariff
-	case "car":
+	case 2:
 		r.Rate = parkingLot.CarTariff
-	case "bus":
+	case 3:
 		if r.RateType == "daily" {
 			r.Rate = parkingLot.BusTariffDaily
 		} else {

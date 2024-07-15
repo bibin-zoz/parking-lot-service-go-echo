@@ -115,7 +115,7 @@ func (repo *parkVehicleRepo) SaveExitDetails(ticket *domain.Ticket, receipt *dom
 		return nil, fmt.Errorf("failed to update ticket: %w", err)
 	}
 
-	if err := tx.Create(receipt).Error; err != nil {
+	if err := tx.Create(&receipt).Error; err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("failed to create receipt: %w", err)
 	}
@@ -124,6 +124,6 @@ func (repo *parkVehicleRepo) SaveExitDetails(ticket *domain.Ticket, receipt *dom
 		tx.Rollback()
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
-
+	fmt.Println(receipt)
 	return receipt, nil
 }

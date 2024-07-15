@@ -19,7 +19,7 @@ import (
 // @version 1.0
 // @description This is a sample server for a parking lot service.
 
-// @host localhost:8080
+// @host localhost:8081
 // @BasePath /
 func main() {
 	// Create a new Echo instance
@@ -66,5 +66,5 @@ func main() {
 	e.GET("/", echoSwagger.WrapHandler)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8081"))
 }

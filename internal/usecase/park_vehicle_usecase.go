@@ -22,22 +22,31 @@ func NewParkVehicleUseCase(parkVehicleRepo repository.ParkVehicleRepository, par
 }
 
 func (uc *ParkVehicleUseCase) ParkVehicle(parkReq models.ParkReq) (*models.Ticket, error) {
-
+	// Fetch parking lot details
 	parkingLotDetails, err := uc.parkingLotRepo.GetParkingLotByID(parkReq.ParkingLotID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch parking lot details: %w", err)
 	}
 
+	// Fetch vehicle details
 	vehicleDetails, err := uc.parkVehicleRepo.GetVehicleDetails(parkReq.VehicleTypeID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch vehicle details: %w", err)
 	}
 
+	// Check if the vehicle is already parked
+	existingTicket, err := uc.parkVehicleRepo.GetParkingDetailsByVehicleNumber(parkReq.VehicleNumber)
+	if err == nil && existingTicket != nil {
+		return nil, fmt.Errorf("vehicle with number %s is already parked", parkReq.VehicleNumber)
+	}
+
+	// Fetch vehicle counts by type
 	counts, err := uc.parkingLotRepo.GetVehicleCountsByType(parkingLotDetails.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch vehicle counts: %w", err)
 	}
 
+	// Determine the number of free slots
 	var freeSlots int
 	switch vehicleDetails.VehicleType {
 	case "Motorcycle":
@@ -50,10 +59,12 @@ func (uc *ParkVehicleUseCase) ParkVehicle(parkReq models.ParkReq) (*models.Ticke
 		return nil, fmt.Errorf("invalid vehicle type")
 	}
 
+	// Check if there are free slots
 	if freeSlots <= 0 {
 		return nil, fmt.Errorf("parking lot is full for %s", vehicleDetails.VehicleType)
 	}
 
+	// Generate a new ticket
 	ticketGenReq := domain.Ticket{
 		VehicleTypeID: vehicleDetails.ID,
 		VehicleType:   vehicleDetails.VehicleType,
@@ -65,6 +76,7 @@ func (uc *ParkVehicleUseCase) ParkVehicle(parkReq models.ParkReq) (*models.Ticke
 		return nil, fmt.Errorf("failed to park vehicle: %w", err)
 	}
 
+	// Return the generated ticket
 	return &models.Ticket{
 		ID:            ticket.ID,
 		VehicleTypeID: ticket.VehicleTypeID,

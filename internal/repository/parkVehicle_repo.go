@@ -127,3 +127,13 @@ func (repo *parkVehicleRepo) SaveExitDetails(ticket *domain.Ticket, receipt *dom
 	fmt.Println(receipt)
 	return receipt, nil
 }
+func (repo *parkVehicleRepo) GetParkingDetailsByVehicleNumber(vehicleNumber string) (*domain.Ticket, error) {
+	var ticket domain.Ticket
+	if err := repo.db.First(&ticket, "vehicle_number = ? and is_parked=true", vehicleNumber).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("vehicle number not found: %s", vehicleNumber)
+		}
+		return nil, fmt.Errorf("failed to get parking details: %w", err)
+	}
+	return &ticket, nil
+}

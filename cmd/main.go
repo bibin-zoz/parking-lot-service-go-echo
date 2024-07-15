@@ -10,6 +10,7 @@ import (
 
 	_ "parking-lot-service/docs"
 
+	"github.com/gin-contrib/cors"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -23,6 +24,13 @@ import (
 // @BasePath /
 func main() {
 	e := echo.New()
+	e.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	db, err := config.ConnectDB()
 	if err != nil {
@@ -46,6 +54,7 @@ func main() {
 	e.Static("/swagger-ui", "swagger-ui")
 	e.File("/swagger-ui/openapi.yaml", "../openApi/openapi.yaml")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.GET("/", echoSwagger.WrapHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

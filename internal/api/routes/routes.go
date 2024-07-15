@@ -8,8 +8,8 @@ import (
 )
 
 func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler, parkVehicleHandler *handlers.ParkVehicleHandler) {
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Welcome to Parking Lot API")
+	e.GET("/test", func(c echo.Context) error {
+		return c.String(http.StatusOK, "ci-cd test")
 	})
 
 	// Parking Lots

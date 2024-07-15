@@ -31,7 +31,7 @@ The Parking Lot Service is hosted on an AWS EC2 instance.
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone [<repository-url>](https://github.com/bibin-zoz/parking-lot-service-go-echo.git)
    cd parking-lot-service
    ```
 

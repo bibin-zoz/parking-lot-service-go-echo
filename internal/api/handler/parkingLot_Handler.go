@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"parking-lot-service/internal/models"
 	usecase "parking-lot-service/internal/usecase/interface"
@@ -38,7 +39,8 @@ func (h *ParkingLotHandler) CreateParkingLot(c echo.Context) error {
 
 	err := models.ValidateStruct(&req)
 	if err != nil {
-		log.Error().Err(err).Msg("Validation failed for creating parking lot")
+		log.Error().Err(err).Msg("Validation failed for creating parking lot,recheck the data")
+		fmt.Println(err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
@@ -64,7 +66,7 @@ func (h *ParkingLotHandler) CreateParkingLot(c echo.Context) error {
 // @Router /parking-lots/{id} [get]
 func (h *ParkingLotHandler) GetParkingLotByID(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	if err != nil || id < 1 || id > 10000 {
 		log.Error().Err(err).Msg("Invalid ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID format"})
 	}
@@ -109,7 +111,7 @@ func (h *ParkingLotHandler) GetAllParkingLots(c echo.Context) error {
 // @Router /parking-lots/{id} [put]
 func (h *ParkingLotHandler) UpdateParkingLot(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	if err != nil || id < 1 || id > 10000 {
 		log.Error().Err(err).Msg("Invalid ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID format"})
 	}
@@ -118,6 +120,12 @@ func (h *ParkingLotHandler) UpdateParkingLot(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		log.Error().Err(err).Msg("Invalid request format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request format"})
+	}
+	err = models.ValidateStruct(&req)
+	if err != nil {
+		log.Error().Err(err).Msg("Validation failed for updating parking lot,recheck the data")
+		fmt.Println(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 	req.ID = uint(id)
 
@@ -148,7 +156,7 @@ func (h *ParkingLotHandler) UpdateParkingLot(c echo.Context) error {
 // @Router /parking-lots/{id} [delete]
 func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	if err != nil || id < 1 || id > 10000 {
 		log.Error().Err(err).Msg("Invalid ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID format"})
 	}
@@ -175,7 +183,7 @@ func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 // @Router /parking-lots/free-slots/{parkingLotID} [get]
 func (h *ParkingLotHandler) GetFreeSlots(c echo.Context) error {
 	parkingLotID, err := strconv.Atoi(c.Param("parkingLotID"))
-	if err != nil {
+	if err != nil || parkingLotID < 1 || parkingLotID > 10000 {
 		log.Error().Err(err).Msg("Invalid parking lot ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid parking lot ID format"})
 	}

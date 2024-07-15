@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 type ParkVehicleHandler struct {
@@ -33,6 +34,11 @@ func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	err := models.ValidateStruct(&req)
+	if err != nil {
+		log.Error().Err(err).Msg("Validation failed for creating parking lot,recheck the data")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error(), "message": "Validation failed for creating parking lot,recheck the data"})
 	}
 
 	ticket, err := h.parkingVehicleUseCase.ParkVehicle(*req)

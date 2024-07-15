@@ -32,17 +32,20 @@ func NewParkVehicleHandler(ParkVehicleUseCase usecase.ParkVehicleUseCase) *ParkV
 func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
 	req := new(models.ParkReq)
 
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	if err := c.Bind(req); err != nil {
+		log.Error().Err(err).Msg("Failed to bind request")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request format"})
 	}
-	err := models.ValidateStruct(&req)
+
+	err := models.ValidateStruct(req)
 	if err != nil {
-		log.Error().Err(err).Msg("Validation failed for creating parking lot,recheck the data")
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error(), "message": "Validation failed for creating parking lot,recheck the data"})
+		log.Error().Err(err).Msg("Validation failed for parking request")
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error(), "message": "Validation failed for creating parking lot, recheck the data"})
 	}
 
 	ticket, err := h.parkingVehicleUseCase.ParkVehicle(*req)
 	if err != nil {
+		log.Error().Err(err).Msg("Failed to park vehicle")
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 

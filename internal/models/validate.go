@@ -2,6 +2,8 @@ package models
 
 import (
 	"reflect"
+	"regexp"
+	"unicode"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -14,6 +16,7 @@ func init() {
 	validate.RegisterValidation("nonZeroPositive", validateNonZeroPositive)
 	validate.RegisterValidation("nameLength", validateNameLength)
 	validate.RegisterValidation("parkingSpots", validateParkingSpots)
+	validate.RegisterValidation("vehicleNumber", validateVehicleNumber) // Register the vehicle number validator
 }
 
 func ValidateStruct(s interface{}) error {
@@ -26,7 +29,7 @@ func validateNonZeroPositive(fl validator.FieldLevel) bool {
 	switch field.Kind() {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		val := field.Uint()
-		return val > 0
+		return val > 0 && val < 10000
 	}
 	return false
 }
@@ -51,4 +54,34 @@ func validateParkingSpots(fl validator.FieldLevel) bool {
 		return val >= 1 && val <= 500
 	}
 	return false
+}
+
+// Custom validator for vehicle number
+func validateVehicleNumber(fl validator.FieldLevel) bool {
+	vehicleNumber := fl.Field().String()
+
+	// Check length
+	if len(vehicleNumber) < 7 || len(vehicleNumber) > 10 {
+		return false
+	}
+
+	// Count numbers and alphabets
+	var numCount, alphaCount int
+	for _, char := range vehicleNumber {
+		if unicode.IsDigit(char) {
+			numCount++
+		} else if unicode.IsLetter(char) {
+			alphaCount++
+		}
+	}
+
+	// Ensure at least 4 numbers and 2 alphabets
+	if numCount < 4 || alphaCount < 2 {
+		return false
+	}
+
+	// Regular expression for format validation
+	regex := `^[A-Z0-9]{7,10}$`
+	re := regexp.MustCompile(regex)
+	return re.MatchString(vehicleNumber)
 }

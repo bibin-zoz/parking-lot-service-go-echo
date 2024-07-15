@@ -3,7 +3,7 @@ definitions:
   parking-lot-service_internal_models.ExitRequest:
     properties:
       ticket_id:
-        example: 1
+        minimum: 1
         type: integer
     type: object
   parking-lot-service_internal_models.FreeSlots:
@@ -21,16 +21,12 @@ definitions:
         type: integer
     type: object
   parking-lot-service_internal_models.ParkReq:
-    description: ParkReq is the request structure for parking a vehicle
     properties:
       parking_lot_id:
-        example: 1
         type: integer
       vehicle_number:
-        example: ABC123
         type: string
       vehicle_type_id:
-        example: 1
         type: integer
     type: object
   parking-lot-service_internal_models.ParkingLot:
@@ -38,31 +34,22 @@ definitions:
       spots and tariffs
     properties:
       bus_spots:
-        example: 5
         type: integer
       bus_tariff_daily:
-        example: 100
         type: number
       bus_tariff_hourly:
-        example: 15
         type: number
       car_spots:
-        example: 20
         type: integer
       car_tariff:
-        example: 20
         type: number
       id:
-        example: 1
         type: integer
       motorcycle_spots:
-        example: 10
         type: integer
       motorcycle_tariff:
-        example: 10
         type: number
       name:
-        example: Main Parking Lot
         type: string
     type: object
   parking-lot-service_internal_models.Receipt:
@@ -109,7 +96,7 @@ definitions:
         example: 1
         type: integer
       vehicle_number:
-        example: ABC123
+        example: AB01C1234
         type: string
       vehicle_type:
         example: Car
@@ -118,10 +105,21 @@ definitions:
         example: 1
         type: integer
     type: object
-host: localhost:8080
+  parking-lot-service_internal_models.VehicleType:
+    description: VehicleType holds the vehicle type information
+    properties:
+      id:
+        example: 1
+        type: integer
+      vehicle_type:
+        example: Car
+        type: string
+    type: object
+host: parkinglot.bibinvinod.online
 info:
   contact: {}
-  description: This is a sample server for a parking lot service.
+  description: parking-lot-service management. Added sample data in vehicle types,parking
+    lots
   title: Parking Lot API
   version: "1.0"
 paths:
@@ -373,4 +371,27 @@ paths:
       summary: Get free slots in a parking lot
       tags:
       - parkinglot
+  /vehicle-types:
+    get:
+      consumes:
+      - application/json
+      description: Get all vehicle types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/parking-lot-service_internal_models.VehicleType'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get vehicle types
+      tags:
+      - vehicles
 swagger: "2.0"

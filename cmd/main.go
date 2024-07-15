@@ -17,15 +17,13 @@ import (
 
 // @title Parking Lot API
 // @version 1.0
-// @description This is a sample server for a parking lot service.
+// @description parking-lot-service management. Added sample data in vehicle types,parking lots 
 
 // @host parkinglot.bibinvinod.online
 // @BasePath /
 func main() {
-	// Create a new Echo instance
 	e := echo.New()
 
-	// Middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},

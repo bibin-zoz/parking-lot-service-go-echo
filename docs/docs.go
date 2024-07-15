@@ -388,6 +388,41 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/vehicle-types": {
+            "get": {
+                "description": "Get all vehicle types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Get vehicle types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/parking-lot-service_internal_models.VehicleType"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -396,7 +431,7 @@ const docTemplate = `{
             "properties": {
                 "ticket_id": {
                     "type": "integer",
-                    "example": 1
+                    "minimum": 1
                 }
             }
         },
@@ -419,20 +454,16 @@ const docTemplate = `{
             }
         },
         "parking-lot-service_internal_models.ParkReq": {
-            "description": "ParkReq is the request structure for parking a vehicle",
             "type": "object",
             "properties": {
                 "parking_lot_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 },
                 "vehicle_number": {
-                    "type": "string",
-                    "example": "ABC123"
+                    "type": "string"
                 },
                 "vehicle_type_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         },
@@ -441,40 +472,31 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bus_spots": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "integer"
                 },
                 "bus_tariff_daily": {
-                    "type": "number",
-                    "example": 100
+                    "type": "number"
                 },
                 "bus_tariff_hourly": {
-                    "type": "number",
-                    "example": 15
+                    "type": "number"
                 },
                 "car_spots": {
-                    "type": "integer",
-                    "example": 20
+                    "type": "integer"
                 },
                 "car_tariff": {
-                    "type": "number",
-                    "example": 20
+                    "type": "number"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 },
                 "motorcycle_spots": {
-                    "type": "integer",
-                    "example": 10
+                    "type": "integer"
                 },
                 "motorcycle_tariff": {
-                    "type": "number",
-                    "example": 10
+                    "type": "number"
                 },
                 "name": {
-                    "type": "string",
-                    "example": "Main Parking Lot"
+                    "type": "string"
                 }
             }
         },
@@ -538,7 +560,7 @@ const docTemplate = `{
                 },
                 "vehicle_number": {
                     "type": "string",
-                    "example": "ABC123"
+                    "example": "AB01C1234"
                 },
                 "vehicle_type": {
                     "type": "string",
@@ -549,6 +571,20 @@ const docTemplate = `{
                     "example": 1
                 }
             }
+        },
+        "parking-lot-service_internal_models.VehicleType": {
+            "description": "VehicleType holds the vehicle type information",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "vehicle_type": {
+                    "type": "string",
+                    "example": "Car"
+                }
+            }
         }
     }
 }`
@@ -556,11 +592,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "parkinglot.bibinvinod.online",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Parking Lot API",
-	Description:      "This is a sample server for a parking lot service.",
+	Description:      "parking-lot-service management. Added sample data in vehicle types,parking lots",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

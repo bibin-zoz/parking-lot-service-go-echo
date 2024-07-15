@@ -18,6 +18,17 @@ func NewHandler(parkingLotUseCase usecase.ParkingLotUseCase) *ParkingLotHandler 
 	return &ParkingLotHandler{parkingLotUseCase: parkingLotUseCase}
 }
 
+// CreateParkingLot godoc
+// @Summary Create a new parking lot
+// @Description Create a new parking lot with specified details
+// @Tags parkinglot
+// @Accept  json
+// @Produce  json
+// @Param parkingLot body models.ParkingLot true "Parking Lot object to be created"
+// @Success 201 {object} models.ParkingLot
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /parking-lots [post]
 func (h *ParkingLotHandler) CreateParkingLot(c echo.Context) error {
 	var req models.ParkingLot
 	if err := c.Bind(&req); err != nil {
@@ -41,6 +52,16 @@ func (h *ParkingLotHandler) CreateParkingLot(c echo.Context) error {
 	return c.JSON(http.StatusCreated, req)
 }
 
+// GetParkingLotByID godoc
+// @Summary Get a parking lot by ID
+// @Description Retrieve details of a parking lot identified by its ID
+// @Tags parkinglot
+// @Produce  json
+// @Param id path int true "Parking Lot ID"
+// @Success 200 {object} models.ParkingLot
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /parking-lots/{id} [get]
 func (h *ParkingLotHandler) GetParkingLotByID(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -57,6 +78,14 @@ func (h *ParkingLotHandler) GetParkingLotByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, lot)
 }
 
+// GetAllParkingLots godoc
+// @Summary Get all parking lots
+// @Description Retrieve all existing parking lots
+// @Tags parkinglot
+// @Produce  json
+// @Success 200 {array} models.ParkingLot
+// @Failure 500 {object} map[string]string
+// @Router /parking-lots [get]
 func (h *ParkingLotHandler) GetAllParkingLots(c echo.Context) error {
 	lots, err := h.parkingLotUseCase.GetAllParkingLots()
 	if err != nil {
@@ -66,6 +95,18 @@ func (h *ParkingLotHandler) GetAllParkingLots(c echo.Context) error {
 	return c.JSON(http.StatusOK, lots)
 }
 
+// UpdateParkingLot godoc
+// @Summary Update a parking lot
+// @Description Update details of a parking lot identified by its ID
+// @Tags parkinglot
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Parking Lot ID"
+// @Param parkingLot body models.ParkingLot true "Updated Parking Lot object"
+// @Success 200 {object} models.ParkingLot
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /parking-lots/{id} [put]
 func (h *ParkingLotHandler) UpdateParkingLot(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -96,6 +137,15 @@ func (h *ParkingLotHandler) UpdateParkingLot(c echo.Context) error {
 	return c.JSON(http.StatusOK, req)
 }
 
+// DeleteParkingLot godoc
+// @Summary Delete a parking lot
+// @Description Delete a parking lot identified by its ID
+// @Tags parkinglot
+// @Param id path int true "Parking Lot ID"
+// @Success 204
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /parking-lots/{id} [delete]
 func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -112,15 +162,24 @@ func (h *ParkingLotHandler) DeleteParkingLot(c echo.Context) error {
 	log.Info().Msgf("Parking lot with ID: %d deleted successfully", id)
 	return c.NoContent(http.StatusNoContent)
 }
+
+// GetFreeSlots godoc
+// @Summary Get free slots in a parking lot
+// @Description Retrieve the number of available slots in a parking lot identified by its ID
+// @Tags parkinglot
+// @Produce  json
+// @Param parkingLotID path int true "Parking Lot ID"
+// @Success 200 {object} models.FreeSlots
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /parking-lots/free-slots/{parkingLotID} [get]
 func (h *ParkingLotHandler) GetFreeSlots(c echo.Context) error {
-	// Extract parkingLotID from route parameter
 	parkingLotID, err := strconv.Atoi(c.Param("parkingLotID"))
 	if err != nil {
 		log.Error().Err(err).Msg("Invalid parking lot ID format")
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid parking lot ID format"})
 	}
 
-	// Call use case to get free parking slots
 	freeSlots, err := h.parkingLotUseCase.GetFreeParkingLots(uint(parkingLotID))
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get free slots for parking lot ID: %d", parkingLotID)

@@ -8,10 +8,19 @@ import (
 	"parking-lot-service/internal/repository"
 	usecase "parking-lot-service/internal/usecase"
 
+	_ "parking-lot-service/docs"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// @title Parking Lot API
+// @version 1.0
+// @description This is a sample server for a parking lot service.
+
+// @host localhost:8080
+// @BasePath /
 func main() {
 	e := echo.New()
 
@@ -30,10 +39,13 @@ func main() {
 	parkhandler := handlers.NewHandler(parkUseCase)
 	parkvehiclehandler := handlers.NewParkVehicleHandler(parkVehicleUseCase)
 	routes.SetupRoutes(e, parkhandler, parkvehiclehandler)
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
 	e.Static("/swagger-ui", "swagger-ui")
 	e.File("/swagger-ui/openapi.yaml", "../openApi/openapi.yaml")
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

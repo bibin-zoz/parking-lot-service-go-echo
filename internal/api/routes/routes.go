@@ -8,17 +8,21 @@ import (
 )
 
 func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler, parkVehicleHandler *handlers.ParkVehicleHandler) {
-	e.GET("/home", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "test")
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Welcome to Parking Lot API")
 	})
+
+	// Parking Lots
 	e.POST("/parking-lots", parkingLotHandler.CreateParkingLot)
 	e.GET("/parking-lots/:id", parkingLotHandler.GetParkingLotByID)
 	e.GET("/parking-lots", parkingLotHandler.GetAllParkingLots)
 	e.PUT("/parking-lots/:id", parkingLotHandler.UpdateParkingLot)
 	e.DELETE("/parking-lots/:id", parkingLotHandler.DeleteParkingLot)
 
-	e.GET("/parkinglots/freeslots/:parkingLotID", parkingLotHandler.GetFreeSlots)
-	e.POST("/parkinglots", parkVehicleHandler.ParkVehicle)
-	e.DELETE("/parkinglots", parkVehicleHandler.ParkExit)
+	// Free Slots
+	e.GET("/parking-lots/free-slots/:parkingLotID", parkingLotHandler.GetFreeSlots)
 
+	// Parking Vehicle
+	e.POST("/park-vehicle", parkVehicleHandler.ParkVehicle)
+	e.DELETE("/park-vehicle", parkVehicleHandler.ParkExit)
 }

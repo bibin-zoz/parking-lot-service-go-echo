@@ -14,34 +14,68 @@ import (
 func LoadConfig() error {
 	return godotenv.Load()
 }
-
 func ConnectDB() (*gorm.DB, error) {
 	err := LoadConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbHost := os.Getenv("DB_HOST")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	dbPort := os.Getenv("DB_PORT")
+
+	psqlInfo := fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable", dbHost, dbUser, dbPassword, dbPort)
+	db, dbErr := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
+	if dbErr != nil {
+		log.Fatal(dbErr)
+		return nil, dbErr
+	}
+
+	var exists bool
+	// Check if the database exists
+	err = db.Raw("SELECT EXISTS (SELECT FROM pg_database WHERE datname = ?)", dbName).Scan(&exists).Error
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
+
+	// Create the database if it does not exist
+	if !exists {
+		err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", dbName)).Error
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+		log.Println("Created database " + dbName)
+	}
+
+	// Connect to the newly created database
+	db, err = gorm.Open(postgres.Open(psqlInfo+" dbname="+dbName), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	// AutoMigrate the domain models
 	err = db.AutoMigrate(&domain.ParkingLot{}, &domain.Receipt{}, &domain.Ticket{}, &domain.VehicleType{})
 	if err != nil {
-		log.Println("failed to create table")
+		log.Fatal("Failed to create tables:", err)
 		return nil, err
 	}
 
 	err = CreateSampleParkingLots(db)
 	if err != nil {
-		log.Println("failed to create sample parking lots")
+		log.Println("Failed to create sample parking lots")
 		return nil, err
 	}
 
 	err = CreateSampleVehicleTypes(db)
 	if err != nil {
-		log.Println("failed to create sample vehicle types")
+		log.Println("Failed to create sample vehicle types")
 		return nil, err
 	}
 

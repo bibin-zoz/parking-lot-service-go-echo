@@ -17,6 +17,17 @@ func NewParkVehicleHandler(ParkVehicleUseCase usecase.ParkVehicleUseCase) *ParkV
 	return &ParkVehicleHandler{parkingVehicleUseCase: ParkVehicleUseCase}
 }
 
+// ParkVehicle godoc
+// @Summary Park a vehicle
+// @Description Park a vehicle in the parking lot
+// @Tags parking
+// @Accept  json
+// @Produce  json
+// @Param parkReq body models.ParkReq true "Parking Request object"
+// @Success 201 {object} models.Ticket
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /park-vehicle [post]
 func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
 	req := new(models.ParkReq)
 
@@ -32,10 +43,19 @@ func (h *ParkVehicleHandler) ParkVehicle(c echo.Context) error {
 	return c.JSON(http.StatusCreated, ticket)
 }
 
+// ParkExit godoc
+// @Summary Exit a parked vehicle
+// @Description Exit a parked vehicle from the parking lot
+// @Tags parking
+// @Accept  json
+// @Produce  json
+// @Param exitRequest body models.ExitRequest true "Exit Request object"
+// @Success 200 {object} models.Receipt
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /park-vehicle [delete]
 func (h *ParkVehicleHandler) ParkExit(c echo.Context) error {
-	var request struct {
-		TicketID int `json:"ticket_id"`
-	}
+	var request models.ExitRequest
 
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})

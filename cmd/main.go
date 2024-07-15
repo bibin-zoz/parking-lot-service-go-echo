@@ -17,7 +17,7 @@ import (
 
 // @title Parking Lot API
 // @version 1.0
-// @description parking-lot-service management. Added sample data in vehicle types,parking lots 
+// @description parking-lot-service management. Added sample data in vehicle types,parking lots
 
 // @host parkinglot.bibinvinod.online
 // @BasePath /
@@ -61,7 +61,7 @@ func main() {
 	e.Static("/swagger-ui", "swagger-ui")
 	e.File("/swagger-ui/openapi.yaml", "openApi/openapi.yaml")
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/", echoSwagger.WrapHandler)
+	e.GET("/swagger", echoSwagger.WrapHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8081"))

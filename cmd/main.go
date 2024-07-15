@@ -17,8 +17,7 @@ import (
 
 // @title Parking Lot API
 // @version 1.0
-// @description parking-lot-service management. Added sample data in vehicle types,parking lots
-
+// @description API for managing parking lots and vehicles. This service provides endpoints to manage parking lots and vehicles, including operations for parking, unparking, and retrieving parking information.
 // @host parkinglot.bibinvinod.online
 // @BasePath /
 func main() {

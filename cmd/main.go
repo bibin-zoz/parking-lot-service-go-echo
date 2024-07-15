@@ -19,7 +19,7 @@ import (
 // @version 1.0
 // @description This is a sample server for a parking lot service.
 
-// @host localhost:8081
+// @host parkinglot.bibinvinod.online
 // @BasePath /
 func main() {
 	// Create a new Echo instance

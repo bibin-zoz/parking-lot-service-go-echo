@@ -19,5 +19,6 @@ func SetupRoutes(e *echo.Echo, parkingLotHandler *handlers.ParkingLotHandler, pa
 
 	e.GET("/parkinglots/freeslots/:parkingLotID", parkingLotHandler.GetFreeSlots)
 	e.POST("/parkinglots", parkVehicleHandler.ParkVehicle)
+	e.DELETE("/parkinglots", parkVehicleHandler.ParkExit)
 
 }

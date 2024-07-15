@@ -96,3 +96,34 @@ func (repo *parkVehicleRepo) GetVehicleDetails(vehicleID uint) (*domain.VehicleT
 	}
 	return &vehicleType, nil
 }
+func (repo *parkVehicleRepo) GetTicketDetailsByID(ticketID int) (*domain.Ticket, error) {
+	var ticket domain.Ticket
+	result := repo.db.First(&ticket, "id = ?", ticketID)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("invalid ticket ID: %d", ticketID)
+		}
+		return nil, result.Error
+	}
+	return &ticket, nil
+}
+func (repo *parkVehicleRepo) SaveExitDetails(ticket *domain.Ticket, receipt *domain.Receipt) (*domain.Receipt, error) {
+	tx := repo.db.Begin()
+
+	if err := tx.Save(ticket).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to update ticket: %w", err)
+	}
+
+	if err := tx.Create(receipt).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to create receipt: %w", err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return receipt, nil
+}

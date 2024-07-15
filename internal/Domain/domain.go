@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"parking-lot-service/internal/models"
 	"time"
 
 	"gorm.io/gorm"
@@ -49,7 +50,7 @@ type Receipt struct {
 	BillAmount   float64   `json:"bill_amount"`
 }
 
-func (r *Receipt) CalculateBill(parkingLot ParkingLot) {
+func (r *Receipt) CalculateBill(parkingLot models.ParkingLot) {
 	duration := r.ExitTime.Sub(r.EntryTime)
 	hours := duration.Hours()
 	days := duration.Hours() / 24

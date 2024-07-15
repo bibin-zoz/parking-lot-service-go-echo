@@ -6,6 +6,7 @@ import (
 	domain "parking-lot-service/internal/Domain"
 	"parking-lot-service/internal/models"
 	repository "parking-lot-service/internal/repository/interface"
+	"time"
 )
 
 type ParkVehicleUseCase struct {
@@ -75,7 +76,38 @@ func (uc *ParkVehicleUseCase) ParkVehicle(parkReq models.ParkReq) (*models.Ticke
 	}, nil
 }
 
-// func (uc *ParkVehicleUseCase) ParkExit(ticketID string, exitTime time.Time) error {
-// 	// Implement any validation or business logic before calling repository
-// 	return uc.repo.ParkExit(ticketID, exitTime)
-// }
+func (uc *ParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*domain.Receipt, error) {
+	ticketDetails, err := uc.parkVehicleRepo.GetTicketDetailsByID(ticketID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ticket id: %w", err)
+	}
+
+	// Fetch parking lot details
+	parkingLot, err := uc.parkingLotRepo.GetParkingLotByID(ticketDetails.ParkingLotID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch parking lot details: %w", err)
+	}
+
+	receipt := &domain.Receipt{
+		VehicleType:  ticketDetails.VehicleType,
+		ParkingLotID: ticketDetails.ParkingLotID,
+		EntryTime:    ticketDetails.EntryTime,
+		ExitTime:     exitTime,
+		RateType:     "hourly", // or set this based on your logic
+	}
+
+	// Calculate bill amount using Receipt's CalculateBill method
+	receipt.CalculateBill(*parkingLot)
+
+	// Update ticket details
+	ticketDetails.ExitTime = &exitTime
+	ticketDetails.IsParked = false
+
+	// Delegate database operations to the repository
+	receipt, err = uc.parkVehicleRepo.SaveExitDetails(ticketDetails, receipt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save exit details: %w", err)
+	}
+
+	return receipt, nil
+}

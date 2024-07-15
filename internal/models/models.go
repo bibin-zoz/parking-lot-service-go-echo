@@ -18,7 +18,6 @@ type ParkingLot struct {
 	BusTariffHourly  float64 `json:"bus_tariff_hourly"`
 }
 
-
 // @description VehicleType holds the vehicle type information
 type VehicleType struct {
 	ID          uint   `gorm:"primaryKey" json:"id" example:"1"`
@@ -30,12 +29,11 @@ type Ticket struct {
 	ID            int       `gorm:"primaryKey" json:"id" example:"1"`
 	VehicleTypeID uint      `json:"vehicle_type_id" example:"1"`
 	VehicleType   string    `json:"vehicle_type" example:"Car"`
-	VehicleNumber string    `json:"vehicle_number" example:"ABC123"`
+	VehicleNumber string    `json:"vehicle_number" example:"AB01C1234"`
 	ParkingLotID  uint      `json:"parking_lot_id" example:"1"`
 	EntryTime     time.Time `json:"entry_time" example:"2023-07-15T19:20:30+01:00"`
 	IsParked      bool      `gorm:"default:true" json:"is_parked" example:"true"`
 }
-
 
 // @description Receipt is issued when a vehicle exits the parking lot
 type Receipt struct {

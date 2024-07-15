@@ -82,5 +82,14 @@ func (h *ParkVehicleHandler) ParkExit(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, receipt)
+	return c.JSON(http.StatusOK, models.Receipt{
+		ID:           receipt.ID,
+		VehicleType:  receipt.VehicleType,
+		ParkingLotID: receipt.ParkingLotID,
+		EntryTime:    receipt.EntryTime,
+		ExitTime:     receipt.ExitTime,
+		Rate:         receipt.Rate,
+		RateType:     receipt.RateType,
+		BillAmount:   receipt.BillAmount,
+	})
 }

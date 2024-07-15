@@ -45,15 +45,19 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 		mockUseCase.EXPECT().ParkExit(1, gomock.Any()).Return(receipt, nil)
 
 		reqBody := strings.NewReader(req)
-		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
+		request := httptest.NewRequest(http.MethodDelete, "/park-vehicle", reqBody) // Use DELETE method
 		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(request, rec)
 
 		if assert.NoError(t, handler.ParkExit(c)) {
 			assert.Equal(t, http.StatusOK, rec.Code)
-			expectedBody := `{"ID":1,"vehicle_type":"car","parking_lot_id":1,"entry_time":"2024-07-15T09:00:00Z","exit_time":"2024-07-15T10:06:57.008758156Z","rate":10,"RateType":"hourly","bill_amount":10}`
-			assert.JSONEq(t, expectedBody, rec.Body.String())
+
+			// Marshal the receipt into JSON for comparison
+			expectedBody, err := json.Marshal(receipt)
+			require.NoError(t, err)
+
+			assert.JSONEq(t, string(expectedBody), rec.Body.String())
 		}
 	})
 
@@ -61,7 +65,7 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 		req := `{"ticket_id": -10}` // Provide a negative value as a string
 
 		reqBody := strings.NewReader(req)
-		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
+		request := httptest.NewRequest(http.MethodDelete, "/park-vehicle", reqBody) // Use DELETE method
 		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(request, rec)
@@ -81,14 +85,13 @@ func TestParkVehicleHandler_ParkExit(t *testing.T) {
 		mockUseCase.EXPECT().ParkExit(1, gomock.Any()).Return(nil, fmt.Errorf("vehicle already checked out, invalid ID"))
 
 		reqBody := strings.NewReader(req)
-		request := httptest.NewRequest(http.MethodPost, "/parkexit", reqBody)
+		request := httptest.NewRequest(http.MethodDelete, "/park-vehicle", reqBody) // Use DELETE method
 		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(request, rec)
 
 		// Call the handler function
 		err := handler.ParkExit(c)
-	
 
 		// Check the response body for error details
 		var response map[string]string

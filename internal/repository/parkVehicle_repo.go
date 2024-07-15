@@ -137,3 +137,10 @@ func (repo *parkVehicleRepo) GetParkingDetailsByVehicleNumber(vehicleNumber stri
 	}
 	return &ticket, nil
 }
+func (repo *parkVehicleRepo) GetVehicleTypes() ([]domain.VehicleType, error) {
+	var vehicleTypes []domain.VehicleType
+	if err := repo.db.Find(&vehicleTypes).Error; err != nil {
+		return nil, fmt.Errorf("failed to get vehicle types: %w", err)
+	}
+	return vehicleTypes, nil
+}

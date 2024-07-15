@@ -93,3 +93,21 @@ func (h *ParkVehicleHandler) ParkExit(c echo.Context) error {
 		BillAmount:   receipt.BillAmount,
 	})
 }
+
+// GetVehicleTypes godoc
+// @Summary Get vehicle types
+// @Description Get all vehicle types
+// @Tags vehicles
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []models.VehicleType
+// @Failure 500 {object} map[string]string
+// @Router /vehicle-types [get]
+func (h *ParkVehicleHandler) GetVehicleTypes(c echo.Context) error {
+	vehicleTypes, err := h.parkingVehicleUseCase.GetVehicleTypes()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get vehicle types")
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	return c.JSON(http.StatusOK, vehicleTypes)
+}

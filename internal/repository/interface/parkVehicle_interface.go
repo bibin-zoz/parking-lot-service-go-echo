@@ -13,4 +13,5 @@ type ParkVehicleRepository interface {
 	GetTicketDetailsByID(ticketID int) (*domain.Ticket, error)
 	SaveExitDetails(ticket *domain.Ticket, receipt *domain.Receipt) (*domain.Receipt, error)
 	GetParkingDetailsByVehicleNumber(vehicleNumber string) (*domain.Ticket, error)
+	GetVehicleTypes() ([]domain.VehicleType, error)
 }

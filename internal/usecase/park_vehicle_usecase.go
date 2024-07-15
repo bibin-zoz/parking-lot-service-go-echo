@@ -138,3 +138,10 @@ func (uc *ParkVehicleUseCase) ParkExit(ticketID int, exitTime time.Time) (*model
 
 	return result, nil
 }
+func (uc *ParkVehicleUseCase) GetVehicleTypes() ([]domain.VehicleType, error) {
+	vehicleTypes, err := uc.parkVehicleRepo.GetVehicleTypes()
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch details: %w", err)
+	}
+	return vehicleTypes, nil
+}

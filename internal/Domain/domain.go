@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"math"
 	"parking-lot-service/internal/models"
 	"time"
 
@@ -57,23 +58,26 @@ func (r *Receipt) CalculateBill(parkingLot models.ParkingLot) {
 	days := duration.Hours() / 24
 
 	switch r.VehicleTypeID {
-	case 1:
+	case 1: // Motorcycle/scooter
 		r.Rate = parkingLot.MotorcycleTariff
-	case 2:
+	case 2: // Car/SUV
 		r.Rate = parkingLot.CarTariff
-	case 3:
-		if r.RateType == "daily" {
+	case 3: // Bus/Truck
+		if days >= 1 {
 			r.Rate = parkingLot.BusTariffDaily
+			r.RateType = "daily"
 		} else {
 			r.Rate = parkingLot.BusTariffHourly
+			r.RateType = "hourly"
 		}
 	default:
 		r.Rate = 0
+		r.RateType = ""
 	}
 
 	if r.RateType == "daily" {
 		r.BillAmount = days * r.Rate
 	} else {
-		r.BillAmount = hours * r.Rate
+		r.BillAmount = math.Ceil(hours) * r.Rate
 	}
 }

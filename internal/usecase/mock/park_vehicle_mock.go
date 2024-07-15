@@ -5,6 +5,7 @@
 package mock
 
 import (
+	domain "parking-lot-service/internal/Domain"
 	models "parking-lot-service/internal/models"
 	reflect "reflect"
 	time "time"
@@ -33,6 +34,21 @@ func NewMockParkVehicleUseCase(ctrl *gomock.Controller) *MockParkVehicleUseCase 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockParkVehicleUseCase) EXPECT() *MockParkVehicleUseCaseMockRecorder {
 	return m.recorder
+}
+
+// GetVehicleTypes mocks base method.
+func (m *MockParkVehicleUseCase) GetVehicleTypes() ([]domain.VehicleType, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVehicleTypes")
+	ret0, _ := ret[0].([]domain.VehicleType)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVehicleTypes indicates an expected call of GetVehicleTypes.
+func (mr *MockParkVehicleUseCaseMockRecorder) GetVehicleTypes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleTypes", reflect.TypeOf((*MockParkVehicleUseCase)(nil).GetVehicleTypes))
 }
 
 // ParkExit mocks base method.

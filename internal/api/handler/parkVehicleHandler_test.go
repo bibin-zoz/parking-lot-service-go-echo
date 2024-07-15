@@ -19,6 +19,57 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestParkVehicleHandler_ParkVehicle(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUseCase := mock.NewMockParkVehicleUseCase(ctrl)
+	handler := handler.NewParkVehicleHandler(mockUseCase)
+
+	e := echo.New()
+
+	t.Run("success", func(t *testing.T) {
+		req := `{"vehicle_number":"AB14G6123", "vehicle_type_id":1, "parking_lot_id":1}`
+
+		parkReq := models.ParkReq{
+			VehicleNumber: "AB14G6123",
+			VehicleTypeID: 1,
+			ParkingLotID:  1,
+		}
+
+		createdTicket := &models.Ticket{
+			ID:            1,
+			VehicleNumber: "AB14G6123",
+			VehicleType:   "car",
+			ParkingLotID:  1,
+			EntryTime:     time.Now(),
+			IsParked:      true,
+		}
+
+		mockUseCase.EXPECT().ParkVehicle(parkReq).Return(createdTicket, nil)
+
+		reqBody := strings.NewReader(req)
+		request := httptest.NewRequest(http.MethodPost, "/park-vehicle", reqBody)
+		request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(request, rec)
+
+		if assert.NoError(t, handler.ParkVehicle(c)) {
+			assert.Equal(t, http.StatusCreated, rec.Code)
+
+			var response models.Ticket
+			err := json.Unmarshal(rec.Body.Bytes(), &response)
+			require.NoError(t, err)
+
+			assert.Equal(t, createdTicket.ID, response.ID)
+			assert.Equal(t, createdTicket.VehicleNumber, response.VehicleNumber)
+			assert.Equal(t, createdTicket.VehicleType, response.VehicleType)
+			assert.Equal(t, createdTicket.ParkingLotID, response.ParkingLotID)
+			assert.WithinDuration(t, createdTicket.EntryTime, response.EntryTime, time.Second)
+			assert.True(t, response.IsParked)
+		}
+	})
+}
 func TestParkVehicleHandler_ParkExit(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
